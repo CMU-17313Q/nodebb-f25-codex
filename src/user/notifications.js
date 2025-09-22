@@ -120,6 +120,7 @@ UserNotifications.getNotifications = async function (nids, uid) {
 		}
 
 		return notification;
+		
 	});
 
 	await deleteUserNids(deletedNids, uid);
