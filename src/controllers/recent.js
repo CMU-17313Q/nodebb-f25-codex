@@ -2,6 +2,13 @@
 
 const nconf = require('nconf');
 
+// ✅ make sure these requires exist (paths match NodeBB's tree)
+const topics = require('../topics');
+const user = require('../user');
+const meta = require('../meta');
+const privileges = require('../privileges');
+const helpers = require('./helpers'); // controllers/helpers.js
+
 const recentController = module.exports;
 const relative_path = nconf.get('relative_path');
 
@@ -41,7 +48,7 @@ recentController.get = async function (req, res, next) {
 recentController.getData = async function (req, url, sort) {
 	const page = parseInt(req.query.page, 10) || 1;
 
-	// single, simplified term logic
+	// simplified term logic (no duplicate let)
 	const termKey = req.query.term;
 	let term = termKey ? helpers.terms[termKey] : 'alltime';
 	if (termKey && !term) return null;
@@ -74,7 +81,7 @@ recentController.getData = async function (req, url, sort) {
 		query: req.query,
 	});
 
-	// use one computation + helper
+	// single computation + helper (remove any older isDisplayedAsHome block)
 	const asHome = !(req.originalUrl.startsWith(`${relative_path}/api/${url}`) || req.originalUrl.startsWith(`${relative_path}/${url}`));
 	const baseUrl = asHome ? '' : url;
 	setTitleAndBreadcrumbs(data, url, asHome);
@@ -91,14 +98,13 @@ recentController.getData = async function (req, url, sort) {
 	data.selectedTag = tagData.selectedTag;
 	data.selectedTags = tagData.selectedTags;
 
-	// single RSS path via helper
+	// single RSS path via helper (remove any manual RSS block)
 	setRssFields({ data, url, req, rssToken });
 
 	data.filters = helpers.buildFilters(baseUrl, filter, query);
-	data.selectedFilter = data.filters.find(f => f && f.selected);
+	data.selectedFilter = data.filters.find(f => f && f.selected) || null;
 
 	return data;
 };
 
 require('../promisify')(recentController, ['get']);
-
