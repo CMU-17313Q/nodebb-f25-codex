@@ -66,16 +66,16 @@ recentController.getData = async function (req, url, sort) {
 	const stop = start + settings.topicsPerPage - 1;
 
 	const data = await topics.getSortedTopics({
-				cids: cid,
-				tags: tag,
-				uid: req.uid,
-				start: start,
-				stop: stop,
-				filter: filter,
-				term: term,
-				sort: sort,
-				floatPinned: req.query.pinned,
-				query: req.query,
+		cids: cid,
+		tags: tag,
+		uid: req.uid,
+		start: start,
+		stop: stop,
+		filter: filter,
+		term: term,
+		sort: sort,
+		floatPinned: req.query.pinned,
+		query: req.query,
 	});
 
 	const asHome = !(req.originalUrl.startsWith(`${relative_path}/api/${url}`) || req.originalUrl.startsWith(`${relative_path}/${url}`));
