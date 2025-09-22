@@ -1,18 +1,21 @@
 'use strict';
 
 const nconf = require('nconf');
-
-// ✅ make sure these requires exist (paths match NodeBB's tree)
-const topics = require('../topics');
 const user = require('../user');
+const topics = require('../topics');
 const meta = require('../meta');
 const privileges = require('../privileges');
-const helpers = require('./helpers'); // controllers/helpers.js
+
+
+const helpers = require('./helpers');
 
 const recentController = module.exports;
 const relative_path = nconf.get('relative_path');
 
-// helper to set title & breadcrumbs
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
 function setTitleAndBreadcrumbs(data, url, asHome) {
 	if (asHome) {
 		data.title = meta.config.homePageTitle || '[[pages:home]]';
@@ -22,11 +25,8 @@ function setTitleAndBreadcrumbs(data, url, asHome) {
 	data.breadcrumbs = helpers.buildBreadcrumbs([{ text: `[[${url}:title]]` }]);
 }
 
-// helper to set RSS fields
-function setRssFields(ctx) {
-	const { data, url, req, rssToken } = ctx;
+function setRssFields({ data, url, req, rssToken }) {
 	const disabled = meta.config['feeds:disableRSS'] || 0;
-
 	data['feeds:disableRSS'] = disabled;
 	if (disabled) return;
 
@@ -36,6 +36,10 @@ function setRssFields(ctx) {
 	}
 	data.rssFeedUrl = rss;
 }
+
+// ---------------------------------------------------------------------------
+// Routes
+// ---------------------------------------------------------------------------
 
 recentController.get = async function (req, res, next) {
 	const data = await recentController.getData(req, 'recent', 'recent');
@@ -48,13 +52,13 @@ recentController.get = async function (req, res, next) {
 recentController.getData = async function (req, url, sort) {
 	const page = parseInt(req.query.page, 10) || 1;
 
-	// simplified term logic (no duplicate let)
+	// term selection (simplified, no redeclarations)
 	const termKey = req.query.term;
 	let term = termKey ? helpers.terms[termKey] : 'alltime';
 	if (termKey && !term) return null;
 
 	const { cid, tag } = req.query;
-	const filter = req.query.filter || '';
+	const activeFilter = req.query.filter || '';
 
 	const [settings, categoryData, tagData, rssToken, canPost, isPrivileged] = await Promise.all([
 		user.getSettings(req.uid),
@@ -74,37 +78,45 @@ recentController.getData = async function (req, url, sort) {
 		uid: req.uid,
 		start,
 		stop,
-		filter,
+		filter: activeFilter,
 		term,
 		sort,
 		floatPinned: req.query.pinned,
 		query: req.query,
 	});
 
-	// single computation + helper (remove any older isDisplayedAsHome block)
-	const asHome = !(req.originalUrl.startsWith(`${relative_path}/api/${url}`) || req.originalUrl.startsWith(`${relative_path}/${url}`));
+	// asHome + breadcrumbs
+	const asHome = !(req.originalUrl.startsWith(`${relative_path}/api/${url}`) ||
+	                 req.originalUrl.startsWith(`${relative_path}/${url}`));
 	const baseUrl = asHome ? '' : url;
 	setTitleAndBreadcrumbs(data, url, asHome);
 
+	// query adjustments
 	const query = { ...req.query };
 	delete query.page;
 
+	// permissions & selections
 	data.canPost = canPost;
 	data.showSelect = isPrivileged;
 	data.showTopicTools = isPrivileged;
+
 	data.allCategoriesUrl = baseUrl + helpers.buildQueryString(query, 'cid', '');
 	data.selectedCategory = categoryData.selectedCategory;
 	data.selectedCids = categoryData.selectedCids;
 	data.selectedTag = tagData.selectedTag;
 	data.selectedTags = tagData.selectedTags;
 
-	// single RSS path via helper (remove any manual RSS block)
+	// RSS
 	setRssFields({ data, url, req, rssToken });
 
-	data.filters = helpers.buildFilters(baseUrl, filter, query);
-	data.selectedFilter = data.filters.find(f => f && f.selected) || null;
+	// filters
+	data.filters = helpers.buildFilters(baseUrl, activeFilter, query);
+	data.selectedFilter = Array.isArray(data.filters)
+		? data.filters.find(f => f && f.selected) || null
+		: null;
 
 	return data;
 };
 
 require('../promisify')(recentController, ['get']);
+
