@@ -19,11 +19,11 @@ UserNotifications.get = async function (uid) {
 	if (parseInt(uid, 10) <= 0) {
 		return { read: [], unread: [] };
 	}
+
 	let unread = await getNotificationsFromSet(`uid:${uid}:notifications:unread`, uid, { start: 0, stop: 49 });
 	unread = unread.filter(Boolean);
 	let read = [];
 	if (unread.length < 50) {
-		read = await getNotificationsFromSet(`uid:${uid}:notifications:read`, uid, 0, 49 - unread.length);
 		read = await getNotificationsFromSet(`uid:${uid}:notifications:read`, uid, { start: 0, stop: 49 - unread.length });
 	}
 
