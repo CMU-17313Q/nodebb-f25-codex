@@ -1,0 +1,14 @@
+{
+  "id": "nodebb-plugin-anonymous-button",
+  "name": "Anonymous Button",
+  "library": "./library.js",
+  "scripts": [
+    "static/lib/client.js"
+  ],
+  "hooks": [
+    {
+      "hook": "filter:composer.formatting",
+      "method": "addFormattingButton"
+    }
+  ]
+}

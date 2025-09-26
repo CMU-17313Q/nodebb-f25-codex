@@ -1,0 +1,8 @@
+{
+  "name": "nodebb-plugin-anonymous-button",
+  "version": "0.0.1",
+  "main": "library.js",
+  "nbbpm": {
+    "compatibility": "^3.0.0"
+  }
+}
