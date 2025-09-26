@@ -58,16 +58,6 @@ module.exports = function (Posts) {
 function modifyPost(post, fields) {
 	if (post) {
 		db.parseIntFields(post, intFields, fields);
-
-		//(Lujain change: Handle anonymous posts)
-		if (post.isAnonymous && parseInt(post.uid, 10) > 0) {
-				post.displayname = 'Anonymous';
-				post.username = 'Anonymous';
-				post.userslug = 'anonymous';
-				post.picture = '';
-			}
-
-
 		if (post.hasOwnProperty('upvotes') && post.hasOwnProperty('downvotes')) {
 			post.votes = post.upvotes - post.downvotes;
 		}
