@@ -23,6 +23,18 @@ module.exports = function (Posts) {
 		const uidsSignatureSet = new Set(signatureUids.map(uid => parseInt(uid, 10)));
 		const groupsMap = await getGroupsMap(userData);
 
+		//Lujain Changes: mask anonymous users
+		userData.forEach(u => {
+    	if (u && u.isAnonymous && u.uid > 0) {
+			u.username = 'Anonymous';
+			u.userslug = 'anonymous';
+			u.picture = '';
+			u.fullname = undefined;
+			u.signature = '';
+			u.selectedGroups = [];
+			}
+		});
+
 		userData.forEach((userData, index) => {
 			userData.signature = validator.escape(String(userData.signature || ''));
 			userData.fullname = userSettings[index].showfullname ? validator.escape(String(userData.fullname || '')) : undefined;
