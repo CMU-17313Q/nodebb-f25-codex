@@ -30,8 +30,8 @@ define('forum/anonymous', ['hooks'], function (hooks) {
             $(this).removeClass('btn-danger').addClass('btn-secondary');
         }
     });
-
-    hooks.on('filter:composer.data', function (payload) {
+// changed this
+    hooks.on('filter:composer.build', function (payload) {
         payload.data.isAnonymous = isAnonymous;
         return payload;
     });
