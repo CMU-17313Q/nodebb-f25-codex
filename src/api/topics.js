@@ -63,7 +63,14 @@ topicsAPI.create = async function (caller, data) {
 	const payload = { ...data };
 	delete payload.tid;
 	payload.tags = payload.tags || [];
+
+	// ✅ Preserve isAnonymous flag
+	if (typeof data.isAnonymous !== 'undefined') {
+		payload.isAnonymous = data.isAnonymous ? 1 : 0;
+	}
+
 	apiHelpers.setDefaultPostData(caller, payload);
+
 	const isScheduling = parseInt(data.timestamp, 10) > payload.timestamp;
 	if (isScheduling) {
 		if (await privileges.categories.can('topics:schedule', data.cid, caller.uid)) {
@@ -93,12 +100,22 @@ topicsAPI.create = async function (caller, data) {
 	return result.topicData;
 };
 
+
 topicsAPI.reply = async function (caller, data) {
 	if (!data || !data.tid || (meta.config.minimumPostLength !== 0 && !data.content)) {
 		throw new Error('[[error:invalid-data]]');
 	}
+
 	const payload = { ...data };
 	delete payload.pid;
+
+	// ✅ Preserve isAnonymous flag
+	if (typeof data.isAnonymous !== 'undefined') {
+		if (data.isAnonymous) {
+			payload.isAnonymous = 1;
+		}
+	}
+
 	apiHelpers.setDefaultPostData(caller, payload);
 
 	await meta.blacklist.test(caller.ip);
@@ -127,6 +144,7 @@ topicsAPI.reply = async function (caller, data) {
 
 	return postData;
 };
+
 
 topicsAPI.delete = async function (caller, data) {
 	await doTopicAction('delete', 'event:topic_deleted', caller, {

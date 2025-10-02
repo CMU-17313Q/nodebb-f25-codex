@@ -14,12 +14,17 @@ const utils = require('../utils');
 module.exports = function (Posts) {
 	Posts.create = async function (data) {
 		// This is an internal method, consider using Topics.reply instead
-		const { uid, tid, _activitypub, sourceContent } = data;
+		const { uid, tid, _activitypub, sourceContent} = data;
 		const content = data.content.toString();
 		const timestamp = data.timestamp || Date.now();
 		const isMain = data.isMain || false;
-		// raghd - add an anonymous feature for posts const
-		const isAnonymous = data.isAnonymous === true;
+		const isAnonymousFlag = (
+			data.isAnonymous === true ||
+			data.isAnonymous === 'true' ||
+			data.isAnonymous === 1 ||
+			data.isAnonymous === '1'
+		) ? 1 : 0;
+
 
 		if (!uid && parseInt(uid, 10) !== 0) {
 			throw new Error('[[error:invalid-uid]]');
@@ -30,9 +35,15 @@ module.exports = function (Posts) {
 		}
 
 		const pid = data.pid || await db.incrObjectField('global', 'nextPid');
-		// raghd - added is anonymous to postdata
-		let postData = { pid, uid, tid, content, sourceContent, timestamp, isAnonymous};
-
+		let postData = { 
+			pid, 
+			uid, 
+			tid, 
+			content, 
+			sourceContent, 
+			timestamp, 
+			isAnonymous: isAnonymousFlag,
+		};
 		if (data.toPid) {
 			postData.toPid = data.toPid;
 		}
