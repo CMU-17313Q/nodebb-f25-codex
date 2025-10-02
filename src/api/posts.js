@@ -42,15 +42,6 @@ postsAPI.get = async function (caller, data) {
 		post.content = '[[topic:post-is-deleted]]';
 	}
 
-	// mask identity if post is anonymous
-	if (post.isAnonymous) {
-		post.user = post.user || {};
-		post.user.username = 'Anonymous';
-		post.user.displayname = 'Anonymous';
-		post.user.userslug = null;
-		post.user.picture = '/plugins/nodebb-plugin-anonymous-button/anon.png';
-	}
-
 	return post;
 };
 
@@ -72,15 +63,6 @@ postsAPI.getSummary = async (caller, { pid }) => {
 	}
 
 	const postsData = await posts.getPostSummaryByPids([pid], caller.uid, { stripTags: false });
-
-	if (postsData[0] && postsData[0].isAnonymous) {
-		postsData[0].user = postsData[0].user || {};
-		postsData[0].user.username = 'Anonymous';
-		postsData[0].user.displayname = 'Anonymous';
-		postsData[0].user.userslug = null;
-		postsData[0].user.picture = '/plugins/nodebb-plugin-anonymous-button/anon.png';
-	}
-
 	posts.modifyPostByPrivilege(postsData[0], topicPrivileges);
 	return postsData[0];
 };
@@ -102,7 +84,6 @@ postsAPI.getRaw = async (caller, { pid }) => {
 	const result = await plugins.hooks.fire('filter:post.getRawPost', { uid: caller.uid, postData: postData });
 	return result.postData.content;
 };
-
 
 postsAPI.edit = async function (caller, data) {
 	if (!data || !data.pid || (meta.config.minimumPostLength !== 0 && !data.content)) {
