@@ -36,6 +36,10 @@ post:
       required: true
       description: a valid topic id
       example: 2
+      isAnonymous:
+        type: integer # 0 or 1
+        description: Post as anonymous user (if allowed by forum)
+        example: 0
   requestBody:
     required: true
     content:
