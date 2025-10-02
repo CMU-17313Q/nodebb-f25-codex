@@ -1,12 +1,12 @@
 /* global $, require, app, socket */
 'use strict';
-console.log('[anonymous-button] client script loaded');
 
 (function () {
     let isAnonymous = false;
 
     require(['hooks', 'api'], function (hooks, api) {
         
+        // the floating button
         function initButton() {
             if ($('#anon-toggle-floating').length) {
                 const $existingBtn = $('#anon-toggle-floating');
@@ -28,7 +28,6 @@ console.log('[anonymous-button] client script loaded');
                 isAnonymous = !isAnonymous;
                 $btn.toggleClass('btn-success', isAnonymous)
                     .toggleClass('btn-secondary', !isAnonymous);
-                console.log('[anonymous-button] anonymous mode:', isAnonymous);
             });
 
             $('body').append($btn);
@@ -36,19 +35,19 @@ console.log('[anonymous-button] client script loaded');
 
         hooks.on('action:ajaxify.end', initButton);
 
+        // check composer data before submission
         hooks.on('filter:composer.submit', function (data) {
-            console.log('[anonymous-button] filter:composer.submit - data before:', JSON.stringify(data));
             
             if (isAnonymous) {
                 data.composerData = data.composerData || {};
                 data.composerData.isAnonymous = 1;
                 
-                console.log('[anonymous-button] Added isAnonymous flag to composerData');
             }
-            
+          
             return data;
         });
 
+        // hooks to make sure the flag is passed through
         hooks.on('action:composer.submit', function (data) {
             
             if (isAnonymous) {
@@ -58,31 +57,62 @@ console.log('[anonymous-button] client script loaded');
                 if (data.postData) {
                     data.postData.isAnonymous = 1;
                 }
-                console.log('[anonymous-button] Attached isAnonymous to composer data');
             }
         });
 
+        // rendering anonymous posts
         function makePostAnonymous($post) {
-            console.log('[anonymous-button] Making post anonymous in DOM');
             
-            $post.find('[component="post/author"]').text('Anonymous');
-            $post.find('[itemprop="author"]').text('Anonymous');
-            $post.find('.username-field').text('Anonymous');
-            $post.find('a[href^="/user/"]').text('Anonymous').attr('href', '#');
+            // replaces the entire author section with Anonymous
+            $post.find('[component="post/author"]').each(function() {
+                $(this).html('<div>Anonymous</div>');
+            });
             
-            $post.find('[component="user/picture"]').html('<i class="fa fa-user-secret fa-2x"></i>');
-            $post.find('.avatar').html('<i class="fa fa-user-secret fa-2x"></i>');
+            $post.find('[itemprop="author"]').each(function() {
+                $(this).html('<div>Anonymous</div>');
+            });
             
-            const $author = $post.find('[component="post/author"]').first();
-            if ($author.length && !$author.next('.anon-badge').length) {
-                $author.after(' <span class="anon-badge badge bg-secondary"><i class="fa fa-user-secret"></i></span>');
+            $post.find('.username-field').each(function() {
+                $(this).html('<div>Anonymous</div>');
+            });
+            
+            $post.find('a[href*="/user/"]').each(function() {
+                const $link = $(this);
+                if ($link.text().trim() !== 'Anonymous') {
+                    $link.replaceWith('<div class="anonymous-user">Anonymous</div>');
+                }
+            });
+            
+            // replace icon with anon.png image
+            $post.find('[component="user/picture"]').each(function() {
+                $(this).html('<div class="anonymous-avatar"><img src="nodebb-plugin-anonymous-button/public/anon.jpg" alt="Anonymous" style="width:46px;height:46px;"></div>');
+            });
+            
+            $post.find('.avatar').each(function() {
+                $(this).replaceWith('<div class="anonymous-avatar"><img src="nodebb-plugin-anonymous-button/public/anon.jpg" alt="Anonymous" style="width:46px;height:46px;"></div>');
+            });
+            
+            $post.find('img.avatar').each(function() {
+                $(this).replaceWith('<div class="anonymous-avatar"><img src="nodebb-plugin-anonymous-button/public/anon.jpg" alt="Anonymous" style="width:46px;height:46px;"></div>');
+            });
+            
+            // anonymous image 
+            const $authorSection = $post.find('[component="post/author"]').first().parent();
+            if ($authorSection.length && !$post.find('.anon-badge').length) {
+                $authorSection.append('<div class="anon-badge"><span class="badge bg-secondary ms-1"><img src="nodebb-plugin-anonymous-button/public/anon.jpg" alt="Anonymous" style="width:20px;height:20px;vertical-align:middle;margin-right:4px;"> Anonymous</span></div>');
             }
+            
+            // mark the post as done
+            $post.attr('data-anonymous-processed', 'true');
+            
         }
 
+        // check new posts being added
         hooks.on('action:posts.loaded', function (data) {
             
             if (data && data.posts) {
                 data.posts.forEach(function (post) {
+
                     
                     if (post.isAnonymous === 1 || post.isAnonymous === true || post.isAnonymous === '1') {
                         const $post = $('[component="post"][data-pid="' + post.pid + '"]');
@@ -92,16 +122,33 @@ console.log('[anonymous-button] client script loaded');
                     }
                 });
             }
+            
+            // Also scan all posts on the page as backup
+            $('[component="post"]').each(function() {
+                const $post = $(this);
+                const pid = $post.attr('data-pid');
+                
+                if (pid && data && data.posts) {
+                    const post = data.posts.find(p => p.pid == pid);
+                    if (post && (post.isAnonymous === 1 || post.isAnonymous === true || post.isAnonymous === '1')) {
+                        makePostAnonymous($post);
+                    }
+                }
+            });
         });
 
+        // newly created posts immediately
         hooks.on('action:posts.post-added', function (data) {
+
             
             if (data && data.post) {
                 const post = data.post;
-                
+                const pid = post.pid;
 
-                if (post.isAnonymous === 1 || post.isAnonymous === true) {
-                    const $post = $('[component="post"][data-pid="' + post.pid + '"]');
+                
+                // check if this was an anonymous post
+                if (post.isAnonymous === 1 || post.isAnonymous === true || post.isAnonymous === '1') {
+                    const $post = $('[component="post"][data-pid="' + pid + '"]');
                     if ($post.length) {
                         makePostAnonymous($post);
                     }
@@ -109,7 +156,20 @@ console.log('[anonymous-button] client script loaded');
             }
         });
 
+        //  check on topic load
         hooks.on('action:topic.loaded', function (data) {
+            
+            // check if data has posts array with isAnonymous info
+            if (data && data.posts) {
+                data.posts.forEach(function(post) {
+                    if (post.isAnonymous === 1 || post.isAnonymous === true || post.isAnonymous === '1') {
+                        const $post = $('[component="post"][data-pid="' + post.pid + '"]');
+                        if ($post.length) {
+                            makePostAnonymous($post);
+                        }
+                    }
+                });
+            }
             
             $('[component="post"]').each(function () {
                 const $post = $(this);
@@ -117,7 +177,7 @@ console.log('[anonymous-button] client script loaded');
                 
                 if (pid) {
                     socket.emit('posts.getPost', pid, function (err, postData) {
-                        if (!err && postData && (postData.isAnonymous === 1 || postData.isAnonymous === true)) {
+                        if (!err && postData && (postData.isAnonymous === 1 || postData.isAnonymous === true || postData.isAnonymous === '1')) {
                             makePostAnonymous($post);
                         }
                     });
@@ -125,30 +185,26 @@ console.log('[anonymous-button] client script loaded');
             });
         });
 
+        // post is submitted,check that it was saved
         hooks.on('action:composer.submitted', function (data) {
-            console.log('[anonymous-button] Post submitted:', data);
             
             if (data && data.data && data.data.pid) {
                 const pid = data.data.pid;
                 
+                // verify the post was saved with isAnonymous flag
                 setTimeout(function () {
                     socket.emit('posts.getPost', pid, function (err, postData) {
                         if (err) {
-                            console.error('[anonymous-button] Error fetching post:', err);
                             return;
-                        }
-                        
-                        console.log('[anonymous-button] Post PID:', pid);
-                        console.log('[anonymous-button] Full post data:', postData);
-                        
+                        }                        
                     });
                 }, 500);
             }
             
+            // reset the anonymous mode
             isAnonymous = false;
             $('#anon-toggle-floating').removeClass('btn-success').addClass('btn-secondary');
         });
 
-        console.log('[anonymous-button] All hooks registered');
     });
 })();
