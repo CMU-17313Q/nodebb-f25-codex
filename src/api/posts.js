@@ -42,7 +42,7 @@ postsAPI.get = async function (caller, data) {
 		post.content = '[[topic:post-is-deleted]]';
 	}
 
-	// ✅ Mask identity if post is anonymous
+	// mask identity if post is anonymous
 	if (post.isAnonymous) {
 		post.user = post.user || {};
 		post.user.username = 'Anonymous';
@@ -73,7 +73,6 @@ postsAPI.getSummary = async (caller, { pid }) => {
 
 	const postsData = await posts.getPostSummaryByPids([pid], caller.uid, { stripTags: false });
 
-	// Mask identity for summaries too
 	if (postsData[0] && postsData[0].isAnonymous) {
 		postsData[0].user = postsData[0].user || {};
 		postsData[0].user.username = 'Anonymous';

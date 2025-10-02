@@ -64,7 +64,6 @@ topicsAPI.create = async function (caller, data) {
 	delete payload.tid;
 	payload.tags = payload.tags || [];
 
-	// ✅ Preserve isAnonymous flag
 	if (typeof data.isAnonymous !== 'undefined') {
 		payload.isAnonymous = data.isAnonymous ? 1 : 0;
 	}
@@ -109,7 +108,6 @@ topicsAPI.reply = async function (caller, data) {
 	const payload = { ...data };
 	delete payload.pid;
 
-	// ✅ Preserve isAnonymous flag
 	if (typeof data.isAnonymous !== 'undefined') {
 		if (data.isAnonymous) {
 			payload.isAnonymous = 1;
