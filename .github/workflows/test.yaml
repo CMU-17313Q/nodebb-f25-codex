@@ -53,6 +53,12 @@ jobs:
         with:
           useLockFile: false
 
+      - name: Install Anonymous Button Plugin
+        run: npm install ./nodebb-plugin-anonymous-button
+
+      - name: Activate Anonymous Button Plugin
+        run: ./nodebb activate nodebb-plugin-anonymous-button
+
       - name: Setup on Redis
         env:
           SETUP: >-
