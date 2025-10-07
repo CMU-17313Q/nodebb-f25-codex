@@ -1,6 +1,7 @@
 {
   "id": "nodebb-plugin-anonymous-button",
   "name": "Anonymous Button",
+  "description": "Adds an anonymous posting button for the user.",
   "library": "",
   "scripts": ["public/js/anonymous-button.js"],
   "hooks": []
