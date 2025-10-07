@@ -1,8 +1,0 @@
-{
-  "id": "nodebb-plugin-anonymous-button",
-  "name": "Anonymous Button",
-  "library": "",
-  "scripts": ["public/js/anonymous-button.js"],
-  "hooks": []
-}
-
