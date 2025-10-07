@@ -85,6 +85,9 @@ jobs:
       - name: Activate Anonymous Button Plugin
         run: ./nodebb activate nodebb-plugin-anonymous-button
 
+      - name: Build NodeBB
+        run: ./nodebb build
+
       - name: Run ESLint
         run: npm run lint
 
