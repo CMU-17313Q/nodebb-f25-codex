@@ -83,7 +83,7 @@ jobs:
           node app --setup="${SETUP}" --ci="${CI}"
 
       - name: Activate Anonymous Button Plugin
-        run: ./nodebb plugins:activate nodebb-plugin-anonymous-button
+        run: ./nodebb activate nodebb-plugin-anonymous-button
 
       - name: Run ESLint
         run: npm run lint
