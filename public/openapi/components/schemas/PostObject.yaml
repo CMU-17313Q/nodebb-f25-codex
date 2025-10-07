@@ -37,6 +37,10 @@ PostObject:
     timestampISO:
       type: string
       description: An ISO 8601 formatted date string (complementing `timestamp`)
+    isAnonymous:                    
+      type: integer
+      description: Indicates whether the post was created anonymously (1 = anonymous, 0 = normal)
+      example: 1
     user:
       type: object
       properties:
