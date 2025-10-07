@@ -1,0 +1,10 @@
+{
+  "id": "nodebb-plugin-polls-test",
+  "name": "Polls Test",
+  "description": "Test plugin to render a simple page",
+  "library": "library.js",
+  "hooks": [
+    { "hook": "static:app.load", "method": "init" }
+  ],
+  "compatibility": "^4.0.0"
+}

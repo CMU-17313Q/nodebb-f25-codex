@@ -1,0 +1,8 @@
+{
+  "name": "nodebb-plugin-polls-page",
+  "version": "1.0.0",
+  "description": "Provides a standalone page to list all polls in the Polls category.",
+  "main": "library.js",
+  "author": "Your Name <you@example.com>",
+  "license": "MIT"
+}

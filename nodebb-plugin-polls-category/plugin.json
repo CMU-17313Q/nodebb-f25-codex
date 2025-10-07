@@ -1,15 +1,24 @@
 {
   "id": "nodebb-plugin-polls-category",
   "name": "Polls Category",
-  "description": "Automatically creates a Polls category on NodeBB startup",
+  "description": "Automatically creates a Polls category on NodeBB startup and enables poll creation and display for topics in that category.",
   "url": "https://github.com/yourusername/nodebb-plugin-polls-category",
   "library": "library.js",
   "hooks": [
     {
       "hook": "static:app.load",
       "method": "init"
+    },
+    {
+      "hook": "filter:topic.build",
+      "method": "addPollForm"
+    },
+    {
+      "hook": "action:topic.save",
+      "method": "attachPoll"
     }
   ],
+  "templates": "templates",
   "compatibility": "^4.0.0",
   "authors": [
     {
