@@ -82,7 +82,7 @@ jobs:
         run: |
           node app --setup="${SETUP}" --ci="${CI}"
 
-      - name: Activate Plugin
+      - name: Activate Solved Button Plugin
         run: ./nodebb activate nodebb-plugin-solved
 
       - name: Build NodeBB
