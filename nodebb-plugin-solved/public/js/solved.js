@@ -14,17 +14,14 @@
     });
 
     function init() {
-
         setupUpvoteWatcher();
         addStyles();
 
-        // restore previously solved posts for everyone
-        setTimeout(showExistingSolvedPosts, 800);
+        // restore solved posts once everything is loaded
+        setTimeout(showExistingSolvedPosts, 1200);
     }
 
     function setupUpvoteWatcher() {
-
-
         $('body').off('click.qa1');
         $('body').on('click.qa1', function (e) {
             const target = $(e.target);
@@ -47,14 +44,12 @@
         $('body').on('click.qa4', '[component*="upvote"]', function () {
             handleUpvoteClick($(this));
         });
-
     }
 
     function handleUpvoteClick(upvoteBtn) {
         const post = upvoteBtn.closest('[component="post"]');
         const pid = post.attr('data-pid');
         const postIndex = post.attr('data-index');
-
 
         if (postIndex === '0') {
             return;
@@ -84,9 +79,9 @@
                 addBadge(post);
                 return;
             } else {
-                // if was prev solved but now unvoted removes it
                 if (post.find('.qa-helpful-badge').length > 0) {
                     removeBadge(post);
+                    unmarkAsSolved(pid);
                     return;
                 }
 
@@ -101,11 +96,15 @@
         $.ajax({
             url: '/solved/mark',
             method: 'POST',
-            data: { pid: pid, solved: true },
-            success: function () {
-            },
-            error: function (err) {
-            }
+            data: { pid: pid, solved: true }
+        });
+    }
+
+    function unmarkAsSolved(pid) {
+        $.ajax({
+            url: '/solved/mark',
+            method: 'POST',
+            data: { pid: pid, solved: false }
         });
     }
 
@@ -113,15 +112,12 @@
         const pid = post.attr('data-pid');
         if (post.find('.qa-helpful-badge').length > 0) return;
 
-
-        // highlights post
         post.css({
             'border-left': '8px solid #28a745',
             'background-color': 'rgba(40, 167, 69, 0.15)',
             'transition': 'all 0.3s ease'
         });
 
-        // badge
         const badge = $(`
             <div class="qa-helpful-badge" style="
                 background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
@@ -179,20 +175,45 @@
         $('head').append(styles);
     }
 
-    function showExistingSolvedPosts() {
+    function showExistingSolvedPosts(retry = 0) {
         if (!ajaxify.data || !ajaxify.data.posts) {
-            setTimeout(showExistingSolvedPosts, 500);
+            if (retry < 10) {
+                setTimeout(() => showExistingSolvedPosts(retry + 1), 500);
+            }
             return;
         }
 
+        const topicOwnerId = ajaxify.data.uid;
+        let allReady = true;
+
         ajaxify.data.posts.forEach(postData => {
-            if (postData.isSolved === 1 || postData.isSolved === '1') {
-                const pid = postData.pid;
-                const postEl = $(`[component="post"][data-pid="${pid}"]`);
-                if (postEl.length) {
+            const pid = postData.pid;
+            const postEl = $(`[component="post"][data-pid="${pid}"]`);
+            if (!postEl.length) return;
+
+            const postIndex = postEl.attr('data-index');
+            if (postIndex === '0') return;
+
+            const isSolved = postData.isSolved === 1 || postData.isSolved === '1';
+            
+            if (isSolved) {
+                const upvoteBtn = postEl.find('[component="post/upvote"]');
+                const isUpvotedByCurrentUser = upvoteBtn.hasClass('upvoted');
+                const upvoteCount = parseInt(upvoteBtn.attr('data-upvotes') || 0);
+
+                if (app.user && app.user.uid === topicOwnerId && isUpvotedByCurrentUser) {
+                    addBadge(postEl);
+                } else if (app.user && app.user.uid === topicOwnerId && !isUpvotedByCurrentUser) {
+                    removeBadge(postEl);
+                    unmarkAsSolved(pid);
+                } else {
                     addBadge(postEl);
                 }
             }
         });
+
+        if (!allReady && retry < 10) {
+            setTimeout(() => showExistingSolvedPosts(retry + 1), 500);
+        }
     }
 })();

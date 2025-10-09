@@ -53,6 +53,9 @@ jobs:
         with:
           useLockFile: false
 
+      - name: Install Solved Plugin
+        run: npm install ./nodebb-plugin-solved
+
       - name: Setup on Redis
         env:
           SETUP: >-
@@ -78,6 +81,12 @@ jobs:
             }
         run: |
           node app --setup="${SETUP}" --ci="${CI}"
+
+      - name: Activate Plugin
+        run: ./nodebb activate nodebb-plugin-solved
+
+      - name: Build NodeBB
+        run: ./nodebb build
 
       - name: Run ESLint
         run: npm run lint
