@@ -1,15 +1,14 @@
 {
-  "id": "nodebb-plugin-summarizer",
-  "name": "Topic Summarizer",
-  "description": "Adds a Summarize button on topics and shows a quick summary",
-  "library": "./library.js",
+  "id": "nodebb-plugin-thread-summarizer",
+  "name": "Thread Summarizer",
+  "description": "Summarize a topic with an LLM",
+  "library": "library.js",
   "hooks": [
-    { "hook": "static:app.load", "method": "init" },
-    { "hook": "filter:topic.build", "method": "injectButton" },
-    { "hook": "static:api.load", "method": "initApi" }
+    { "hook": "static:app.load", "method": "init" }
   ],
   "scripts": [
-    "static/lib/summarize.js"
+    "static/lib/client.js"
   ],
-  "nbbpm": { "compatibility": "^4.1.0" }
+  "nbbpm": { "compatibility": "^3.0.0" },
+  "keywords": ["nodebb-plugin"]
 }

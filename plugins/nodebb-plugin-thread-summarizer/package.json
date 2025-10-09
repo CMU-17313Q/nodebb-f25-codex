@@ -1,8 +1,12 @@
 {
-  "name": "nodebb-plugin-summarizer",
-  "version": "0.1.0",
-  "description": "One-click summary for topics",
-  "keywords": ["nodebb", "nodebb-plugin"],
+  "name": "nodebb-plugin-thread-summarizer",
+  "version": "2.1.0",
+  "description": "Summarize a topic with an LLM",
+  "main": "library.js",
   "license": "MIT",
-  "nbbpm": { "compatibility": "^4.1.0" }
+  "dependencies": {
+    "lru-cache": "^10.4.3",
+    "openai": "^4.55.0",
+    "undici": "^6.19.8"
+  }
 }

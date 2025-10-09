@@ -1,53 +1,133 @@
 'use strict';
 
-const routesHelpers = require.main.require('./src/routes/helpers');
-const topics = require.main.require('./src/topics');
-const meta = require.main.require('./src/meta');
+const { LRUCache } = require('lru-cache');
+const cache = new LRUCache({ max: 200, ttl: 1000 * 60 * 10 }); // 10 minutes
+const STUB = process.env.TS_STUB === '1';
 
-const Summarizer = {};
+let topics, privileges, posts;              // ✅ add posts here
 
-Summarizer.init = async function (params) {
-  const { router, middleware /*, controllers*/ } = params;
+const COOLDOWN_MS = 30 * 1000;
+const lastCall = new Map();
 
-  // ACP menu entry (optional — you can add settings later)
-  routesHelpers.setupAdminPageRoute(router, '/admin/plugins/summarizer', (req, res) => {
-    res.render('admin/plugins/summarizer', {});
-  });
+async function init(params) {
+  const { router } = params;
 
-  // Public API route to get a summary for a topic
-  router.get('/api/summarize/topic/:tid', middleware.authenticate, async (req, res) => {
+  topics = require.main.require('./src/topics');
+  privileges = require.main.require('./src/privileges');
+  posts = require.main.require('./src/posts');   // ✅ initialized once
+
+  const ENV = {
+    apiKey: process.env.OPENAI_API_KEY,
+    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+  };
+
+  router.get('/api/thread-summarizer/v2/:tid', async (req, res) => {
     try {
-      const tid = req.params.tid;
-      const data = await topics.getTopicWithPosts({ tid, uid: req.uid, posts: { perPage: 50, page: 1 } });
-      const text = (data.posts || [])
-        .map(p => (p && p.content) ? p.content.replace(/<[^>]+>/g, '') : '')
-        .join(' ');
-      const summary = naiveSummary(text);
-      res.json({ summary });
+      const uid = req.user?.uid || 0;
+      const tid = parseInt(req.params.tid, 10);
+      if (Number.isNaN(tid) || tid <= 0) {
+        return res.status(400).json({ error: 'Bad topic id' });
+      }
+
+      const canRead = await privileges.topics.can('read', tid, uid);
+      if (!canRead) {
+        return res.status(403).json({ error: 'No permission to read this topic.' });
+      }
+
+      const key = `${uid}:${tid}`;
+      const now = Date.now();
+      const prev = lastCall.get(key) || 0;
+      if (now - prev < COOLDOWN_MS) {
+        const secs = Math.ceil((COOLDOWN_MS - (now - prev)) / 1000);
+        return res.status(429).json({ error: `Please wait ${secs}s before summarizing again.` });
+      }
+      lastCall.set(key, now);
+
+      const cacheKey = `sum:${tid}:${ENV.model}`;
+      const cached = cache.get(cacheKey);
+      if (cached) {
+        return res.json({ tid, summary: cached.summary, postCount: cached.postCount, cached: true });
+      }
+
+      if (STUB) {
+        const fake = `• Stub summary for topic ${tid}\n• postCount=(skipped)\nTL;DR: route & perms OK.`;
+        return res.json({ tid, summary: fake, postCount: null, cached: false, stub: true });
+      }
+
+      // Load first N posts (RAW — no parsing)
+      const MAX_POSTS = 40;
+      const pids = await topics.getPids(tid, 0, MAX_POSTS - 1);
+      if (!pids || pids.length === 0) {
+        return res.json({ tid, summary: '(No content to summarize.)', postCount: 0 });
+      }
+
+      const postList = await posts.getPostsByPids(pids, uid, { parse: false });
+      const postCount = postList?.length || 0;
+      if (!postCount) {
+        return res.json({ tid, summary: '(No content to summarize.)', postCount: 0 });
+      }
+
+      const threadText = postList.map(p => {
+        const author = p.username || p.user?.username || `uid:${p.uid ?? 'unknown'}`;
+        const content = String(p.content || '').replace(/\s+/g, ' ').trim();
+        return `@${author}: ${content}`.slice(0, 1200);
+      }).join('\n');
+
+      const prompt = buildPrompt(threadText);
+      const summary = await callOpenAI({ apiKey: ENV.apiKey, model: ENV.model, prompt });
+
+      const clipped = summary.trim().slice(0, 4000);
+      cache.set(cacheKey, { summary: clipped, postCount });
+
+      res.json({ tid, summary: clipped, postCount, cached: false });
     } catch (err) {
-      res.status(500).json({ error: err.message || String(err) });
+      console.error('[thread-summarizer] error', err);
+      res.status(500).json({ error: 'Summarization failed.', detail: String((err && err.message) || err) });
     }
   });
-};
-
-Summarizer.initApi = async function () {
-  // (Not strictly needed for this simple route, but handy if you add more API later)
-};
-
-Summarizer.injectButton = async function (hookData) {
-  // Add a button into topic tool area
-  hookData.templateData = hookData.templateData || {};
-  hookData.templateData.summarizer = { enabled: true };
-  return hookData;
-};
-
-// very naive extractive summary: take first ~3 sentences up to ~400 chars
-function naiveSummary(text) {
-  const cleaned = (text || '').replace(/\s+/g, ' ').trim();
-  if (!cleaned) return 'No content to summarize.';
-  const sentences = cleaned.split(/(?<=[.?!])\s+/).slice(0, 5);
-  const joined = sentences.join(' ');
-  return joined.length > 400 ? joined.slice(0, 400) + '…' : joined;
 }
 
-module.exports = Summarizer;
+function addThreadTool(data) {
+  data.tools = data.tools || [];
+  data.tools.push({
+    class: 'thread-summarizer',
+    title: 'Summarize this topic',
+    icon: 'fa fa-align-left',
+    onClick: 'window.app.require("forum/summarizer").summarizeCurrentTopic'
+  });
+  return data;
+}
+
+function buildPrompt(text) {
+  return `Summarize the following forum thread as:
+- 5–8 bullet points capturing the key ideas
+- One-line TL;DR at the end prefixed with "TL;DR:"
+Be neutral and faithful to the content. Do not invent facts.
+
+THREAD:
+${text}
+---
+Now produce the summary.`;
+}
+
+async function callOpenAI({ apiKey, model, prompt }) {
+  if (!apiKey) throw new Error('Missing OPENAI_API_KEY');
+  const OpenAI = require('openai');
+  const client = new OpenAI({ apiKey });
+
+  const resp = await client.chat.completions.create({
+    model,
+    messages: [
+      { role: 'system', content: 'You are a concise, faithful summarizer.' },
+      { role: 'user', content: prompt }
+    ],
+    temperature: 0.2,
+  });
+
+  const text = resp.choices?.[0]?.message?.content || '';
+  if (!text) throw new Error('Empty completion from model');
+  return text;
+}
+
+exports.init = init;
+exports.addThreadTool = addThreadTool;
