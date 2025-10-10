@@ -1,0 +1,8 @@
+{
+  "name": "nodebb-plugin-unread-pop-lite",
+  "version": "0.1.0",
+  "description": "Show unread notifications once per session; realtime via existing sockets",
+  "keywords": ["nodebb", "nodebb-plugin"],
+  "license": "MIT",
+  "nbbpm": { "compatibility": "^4.1.0" }
+}
