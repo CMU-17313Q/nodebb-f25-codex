@@ -14,7 +14,8 @@
     "lint": "eslint --cache ./nodebb .",
     "test": "NYC_TEMP_DIR=.nyc_tmp NYC_OUTPUT_DIR=.nyc_cov nyc --temp-dir .nyc_tmp --report-dir .nyc_cov --reporter=html --reporter=text-summary mocha \"test/**/*.test.js\" --exit",
     "coverage": "nyc report --reporter=text-lcov > ./coverage/lcov.info",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls && rm -r coverage"
+    "coveralls": "nyc report --reporter=text-lcov | coveralls && rm -r coverage",
+    "test:popup": "jest test/unread-pop-lite.spec.js"
   },
   "nyc": {
     "exclude": [
@@ -170,6 +171,8 @@
     "grunt": "1.6.1",
     "grunt-contrib-watch": "1.1.0",
     "husky": "8.0.3",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "jsdom": "26.1.0",
     "lint-staged": "16.0.0",
     "mocha": "^10.8.2",
@@ -201,5 +204,8 @@
       "email": "baris@nodebb.org",
       "url": "https://github.com/barisusakli"
     }
-  ]
+  ],
+  "jest": {
+    "testEnvironment": "jsdom"
+  }
 }
