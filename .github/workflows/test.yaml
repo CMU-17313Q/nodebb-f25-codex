@@ -56,6 +56,9 @@ jobs:
       - name: Install Solved Plugin
         run: npm install ./nodebb-plugin-solved
 
+      - name: Install Anonymous Button Plugin
+        run: npm install ./nodebb-plugin-anonymous-button
+
       - name: Setup on Redis
         env:
           SETUP: >-
@@ -84,6 +87,9 @@ jobs:
 
       - name: Activate Solved Button Plugin
         run: ./nodebb activate nodebb-plugin-solved
+        
+      - name: Activate Anonymous Button Plugin
+        run: ./nodebb activate nodebb-plugin-anonymous-button
 
       - name: Build NodeBB
         run: ./nodebb build

@@ -1,0 +1,7 @@
+{
+  "id": "nodebb-plugin-unread-pop-lite",
+  "name": "Unread Popup (Lite)",
+  "library": "",
+  "scripts": ["public/js/unread-pop-lite.js"],
+  "hooks": []
+}
