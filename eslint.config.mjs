@@ -33,11 +33,8 @@ export default defineConfig([
 	},
 	// tests
 	{
-		plugins: {
-			js,
-			'@stylistic/js': stylisticJs,
-		},
-		extends: ['js/recommended'],
+		plugins: { "@stylistic": stylisticJs},
+		extends: ["plugin:@stylistic/recommended"],
 		files: ['test/**/*.js'],
 		languageOptions: {
 			ecmaVersion: 2020,
