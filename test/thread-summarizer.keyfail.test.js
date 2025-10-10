@@ -1,5 +1,4 @@
-/* eslint-env mocha */
-/* eslint-disable @stylistic/js/indent */
+// (removed unused eslint-disables)
 const assert = require('assert');
 const express = require('express');
 const request = require('supertest');
@@ -15,8 +14,8 @@ describe('thread-summarizer – missing OPENAI_API_KEY error branch', () => {
 	let restoreMainRequire;
 
 	beforeEach(() => {
-		process.env.TS_STUB = '0';          // force real path
-		delete process.env.OPENAI_API_KEY;   // missing key triggers 500
+		process.env.TS_STUB = '0'; // force real path
+		delete process.env.OPENAI_API_KEY; // missing key triggers 500
 		process.env.OPENAI_MODEL = 'gpt-4o-mini';
 
 		const realMainRequire = require.main.require;

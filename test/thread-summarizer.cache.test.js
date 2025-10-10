@@ -31,7 +31,7 @@ describe('thread-summarizer – non-stub OpenAI + cache (N posts agnostic)', fun
 				// Return exactly end-start+1 pids; independent of how many posts exist
 				return {
 					getPids: async (_tid, start, end) => {
-						const n = Math.max(0, (end - start + 1) | 0);
+						const n = Math.max(0, (end - start + 1) || 0);
 						return Array.from({ length: n }, (_, i) => start + i + 1); // [1..n]
 					},
 				};
