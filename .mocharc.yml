@@ -1,4 +1,3 @@
-reporter: dot
-timeout: 25000
+spec: "test/**/*.test.js"
+recursive: true
 exit: true
-bail: true

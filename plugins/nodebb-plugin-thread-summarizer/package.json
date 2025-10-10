@@ -1,0 +1,8 @@
+{
+  "name": "nodebb-plugin-summarizer",
+  "version": "0.1.0",
+  "description": "One-click summary for topics",
+  "keywords": ["nodebb", "nodebb-plugin"],
+  "license": "MIT",
+  "nbbpm": { "compatibility": "^4.1.0" }
+}
