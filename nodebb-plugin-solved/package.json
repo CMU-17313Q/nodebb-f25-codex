@@ -1,0 +1,8 @@
+{
+  "name": "nodebb-plugin-solved",
+  "version": "0.1.0",
+  "description": "Highlight/Mark replies that are upvoted by owner.",
+  "keywords": ["nodebb", "nodebb-plugin"],
+  "license": "MIT",
+  "nbbpm": { "compatibility": "^4.1.0" }
+}

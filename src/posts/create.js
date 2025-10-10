@@ -1,3 +1,5 @@
+
+
 'use strict';
 
 const meta = require('../meta');
@@ -14,10 +16,17 @@ const utils = require('../utils');
 module.exports = function (Posts) {
 	Posts.create = async function (data) {
 		// This is an internal method, consider using Topics.reply instead
-		const { uid, tid, _activitypub, sourceContent } = data;
+		const { uid, tid, _activitypub, sourceContent} = data;
 		const content = data.content.toString();
 		const timestamp = data.timestamp || Date.now();
 		const isMain = data.isMain || false;
+		const isAnonymousFlag = (
+			data.isAnonymous === true ||
+            data.isAnonymous === 'true' ||
+            data.isAnonymous === 1 ||
+            data.isAnonymous === '1'
+		) ? 1 : 0;
+
 
 		if (!uid && parseInt(uid, 10) !== 0) {
 			throw new Error('[[error:invalid-uid]]');
@@ -28,8 +37,15 @@ module.exports = function (Posts) {
 		}
 
 		const pid = data.pid || await db.incrObjectField('global', 'nextPid');
-		let postData = { pid, uid, tid, content, sourceContent, timestamp };
-
+		let postData = { 
+			pid, 
+			uid, 
+			tid, 
+			content, 
+			sourceContent, 
+			timestamp, 
+			isAnonymous: isAnonymousFlag,
+		};
 		if (data.toPid) {
 			postData.toPid = data.toPid;
 		}
@@ -52,7 +68,7 @@ module.exports = function (Posts) {
 		if (_activitypub && _activitypub.tag && Array.isArray(_activitypub.tag)) {
 			_activitypub.tag
 				.filter(tag => tag.type === 'Emoji' &&
-					tag.icon && tag.icon.type === 'Image')
+                    tag.icon && tag.icon.type === 'Image')
 				.forEach((tag) => {
 					if (!tag.name.startsWith(':')) {
 						tag.name = `:${tag.name}`;
@@ -113,3 +129,4 @@ module.exports = function (Posts) {
 		}
 	}
 };
+
