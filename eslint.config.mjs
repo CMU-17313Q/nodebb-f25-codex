@@ -33,37 +33,35 @@ export default defineConfig([
     ],
   },
   // tests
-{
-  files: ['test/**/*.js'],
-  plugins: {
-    '@stylistic/js': (await import('@stylistic/eslint-plugin')).default,
-  },
-  extends: [
-    'js/recommended',
-    'plugin:@stylistic/js' // now works because the main plugin is installed
-  ],
-  languageOptions: {
-    ecmaVersion: 2020,
-    sourceType: 'commonjs',
-    globals: {
-      ...globals.node,
-      ...globals.browser,
-      it: 'readonly',
-      describe: 'readonly',
-      before: 'readonly',
-      beforeEach: 'readonly',
-      after: 'readonly',
-      afterEach: 'readonly',
+  {
+    files: ['test/**/*.js'],
+    plugins: {
+      js,
+      '@stylistic/js': stylisticJs,
+    },
+    extends: ['js/recommended'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: 'commonjs',
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+        it: 'readonly',
+        describe: 'readonly',
+        before: 'readonly',
+        beforeEach: 'readonly',
+        after: 'readonly',
+        afterEach: 'readonly',
+      },
+    },
+    rules: {
+      ...commonRules,
+      'no-unused-vars': 'off',
+      'no-prototype-builtins': 'off',
+      // optional relaxations for CI style noise:
+      // '@stylistic/js/no-multi-spaces': 'off',
     },
   },
-  rules: {
-    ...commonRules,
-    'no-unused-vars': 'off',
-    'no-prototype-builtins': 'off',
-    // if you still see spacing nags in tests, you can disable this:
-    // '@stylistic/js/no-multi-spaces': 'off',
-  },
-},
   ...publicConfig,
   ...serverConfig,
 ]);
