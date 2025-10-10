@@ -125,16 +125,6 @@ Important files and directories:
 
 ---
 
-## 10. Author and Acknowledgement
-
-Author: Salwa Al-Kuwari  
-Course: 17-313 Foundations of Software Engineering (Fall 2025)  
-Institution: Carnegie Mellon University in Qatar  
-
-This plugin and test suite were developed as part of Sprint 2, focusing on automated testing and user documentation for software features.
-
----
-
 **AI Assistance Disclosure**
 
 This feature was developed with  assistance from ChatGPT (OpenAI), since it was very complicated.
