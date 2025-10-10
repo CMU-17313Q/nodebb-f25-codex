@@ -1,0 +1,33 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test (with coverage)
+        run: npm test
+
+      # Make Coveralls non-blocking and only run if a token exists
+      - name: Upload coverage to Coveralls (non-blocking)
+        if: ${{ secrets.COVERALLS_REPO_TOKEN != '' && always() }}
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/lcov.info
+        continue-on-error: true
