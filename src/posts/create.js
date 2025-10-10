@@ -1,3 +1,5 @@
+
+
 'use strict';
 
 const meta = require('../meta');
@@ -18,6 +20,12 @@ module.exports = function (Posts) {
 		const content = data.content.toString();
 		const timestamp = data.timestamp || Date.now();
 		const isMain = data.isMain || false;
+		const isAnonymousFlag = (
+			data.isAnonymous === true ||
+            data.isAnonymous === 'true' ||
+            data.isAnonymous === 1 ||
+            data.isAnonymous === '1'
+		) ? 1 : 0;
 
 
 		if (!uid && parseInt(uid, 10) !== 0) {
@@ -36,6 +44,7 @@ module.exports = function (Posts) {
 			content, 
 			sourceContent, 
 			timestamp, 
+			isAnonymous: isAnonymousFlag,
 		};
 		if (data.toPid) {
 			postData.toPid = data.toPid;
@@ -59,7 +68,7 @@ module.exports = function (Posts) {
 		if (_activitypub && _activitypub.tag && Array.isArray(_activitypub.tag)) {
 			_activitypub.tag
 				.filter(tag => tag.type === 'Emoji' &&
-					tag.icon && tag.icon.type === 'Image')
+                    tag.icon && tag.icon.type === 'Image')
 				.forEach((tag) => {
 					if (!tag.name.startsWith(':')) {
 						tag.name = `:${tag.name}`;
@@ -120,3 +129,4 @@ module.exports = function (Posts) {
 		}
 	}
 };
+
