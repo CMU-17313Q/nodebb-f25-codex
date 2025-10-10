@@ -1,7 +1,7 @@
 const assert = require('assert');
 
-describe('repo smoke', () => {
-  it('boots the test runner', () => {
-    assert.strictEqual(1 + 1, 2);
+describe('CI smoke', () => {
+  it('runs at least one test', () => {
+    assert.strictEqual(1, 1);
   });
 });
