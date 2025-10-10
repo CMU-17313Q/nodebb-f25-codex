@@ -42,29 +42,29 @@ describe('thread-summarizer – non-stub OpenAI + cache (native fetch)', functio
       return realMainRequire(id);
     };
 
-    // Mock 'openai' package
+    // Mock 'openai' package (constructor assigns fields; no class properties)
     const realLoad = Module._load;
-    restoreLoad = function () { Module._load = realLoad; };
+    restoreLoad = () => { Module._load = realLoad; };
     Module._load = function (request, parent, isMain) {
       if (request === 'openai') {
-        return class OpenAI {
-          constructor() {}
-          chat = {
+        function OpenAI() {
+          this.chat = {
             completions: {
               create: async () => ({
                 choices: [{ message: { content: '• a\n• b\n• c\nTL;DR: ok' } }],
               }),
             },
           };
-        };
+        }
+        return OpenAI;
       }
       return realLoad.apply(this, arguments);
     };
-  });
+  }); // <-- close beforeEach
 
   afterEach(function () {
-    restoreMainRequire?.();
-    restoreLoad?.();
+    if (restoreMainRequire) restoreMainRequire();
+    if (restoreLoad) restoreLoad();
     const pluginPath = path.resolve(__dirname, '../nodebb-plugin-thread-summarizer/library.js');
     delete require.cache[require.resolve(pluginPath)];
   });
