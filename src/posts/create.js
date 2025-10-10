@@ -18,12 +18,6 @@ module.exports = function (Posts) {
 		const content = data.content.toString();
 		const timestamp = data.timestamp || Date.now();
 		const isMain = data.isMain || false;
-		const isAnonymousFlag = (
-			data.isAnonymous === true ||
-			data.isAnonymous === 'true' ||
-			data.isAnonymous === 1 ||
-			data.isAnonymous === '1'
-		) ? 1 : 0;
 
 
 		if (!uid && parseInt(uid, 10) !== 0) {
@@ -42,7 +36,6 @@ module.exports = function (Posts) {
 			content, 
 			sourceContent, 
 			timestamp, 
-			isAnonymous: isAnonymousFlag,
 		};
 		if (data.toPid) {
 			postData.toPid = data.toPid;

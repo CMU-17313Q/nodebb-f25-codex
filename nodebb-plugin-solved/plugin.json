@@ -1,0 +1,10 @@
+{
+  "id": "nodebb-plugin-solved",
+  "name": "Mark Solved",
+  "library": "library.js",
+  "scripts": ["public/js/solved.js"],
+  "hooks": [
+    { "hook": "filter:posts.get", "method": "addSolvedField" },
+    { "hook": "static:app.load", "method": "init" }
+  ]
+}

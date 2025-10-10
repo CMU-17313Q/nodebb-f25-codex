@@ -53,6 +53,9 @@ jobs:
         with:
           useLockFile: false
 
+      - name: Install Solved Plugin
+        run: npm install ./nodebb-plugin-solved
+
       - name: Install Anonymous Button Plugin
         run: npm install ./nodebb-plugin-anonymous-button
 
@@ -82,6 +85,9 @@ jobs:
         run: |
           node app --setup="${SETUP}" --ci="${CI}"
 
+      - name: Activate Solved Button Plugin
+        run: ./nodebb activate nodebb-plugin-solved
+        
       - name: Activate Anonymous Button Plugin
         run: ./nodebb activate nodebb-plugin-anonymous-button
 
