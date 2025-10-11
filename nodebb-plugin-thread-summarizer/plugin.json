@@ -4,11 +4,14 @@
   "description": "Summarize a topic with an LLM",
   "library": "library.js",
   "hooks": [
-    { "hook": "static:app.load", "method": "init" }
+    { "hook": "static:app.load", "method": "init" },
+    { "hook": "filter:topic.buildTools", "method": "addThreadTool" }
   ],
   "scripts": [
     "static/lib/client.js"
   ],
-  "nbbpm": { "compatibility": "^3.0.0" },
+  "nbbpm": {
+    "compatibility": "^3.0.0"
+  },
   "keywords": ["nodebb-plugin"]
 }

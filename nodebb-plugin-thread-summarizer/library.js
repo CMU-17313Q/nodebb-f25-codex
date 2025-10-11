@@ -96,16 +96,28 @@ async function init(params) {
   });
 }
 
+// nodebb-plugin-thread-summarizer/library.js
 function addThreadTool(data) {
-  data.tools = data.tools || [];
-  data.tools.push({
-    class: 'thread-summarizer',
-    title: 'Summarize this topic',
+  // Harmony sometimes expects either an array or buckets; support both
+  const tool = {
+    class: 'thread-summarizer btn btn-sm btn-outline-secondary',
     icon: 'fa fa-align-left',
+    text: 'Summarize',                 // <— ensures a visible label in wide layout
+    title: 'Summarize this topic',
     onClick: 'window.app.require("forum/summarizer").summarizeCurrentTopic',
-  });
+  };
+
+  if (Array.isArray(data.tools)) {
+    data.tools.push(tool);
+  } else {
+    // bucketed shape
+    data.tools = data.tools || {};
+    data.tools.primary = data.tools.primary || [];
+    data.tools.primary.push(tool);     // <— pin to the visible row
+  }
   return data;
 }
+exports.addThreadTool = addThreadTool;
 
 function buildPrompt(text) {
   return `Summarize the following forum thread as:
