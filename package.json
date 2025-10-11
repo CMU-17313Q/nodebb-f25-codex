@@ -11,8 +11,9 @@
   "main": "app.js",
   "scripts": {
     "start": "node loader.js",
-    "lint": "eslint --cache ./nodebb .",
-    "test": "NYC_TEMP_DIR=.nyc_tmp NYC_OUTPUT_DIR=.nyc_cov nyc --temp-dir .nyc_tmp --report-dir .nyc_cov --reporter=html --reporter=text-summary mocha \"test/**/*.test.js\" --exit",
+    "lint": "eslint --cache ./nodebb ./nodebb-plugin-thread-summarizer",
+    "test": "NYC_TEMP_DIR=.nyc_tmp nyc --reporter=html --reporter=text-summary mocha \"test/**/*.test.js\" --exit",
+    "pretest": "rm -rf .nyc_output coverage .nyc_tmp",
     "coverage": "nyc report --reporter=text-lcov > ./coverage/lcov.info",
     "coveralls": "nyc report --reporter=text-lcov | coveralls && rm -r coverage",
     "test:popup": "jest test/unread-pop-lite.spec.js"
@@ -165,8 +166,8 @@
     "@commitlint/cli": "19.8.1",
     "@commitlint/config-angular": "19.8.1",
     "@eslint/js": "9.26.0",
-    "@stylistic/eslint-plugin-js": "4.4.0",
     "chai": "^6.2.0",
+    "@stylistic/eslint-plugin": "^5.4.0",
     "coveralls": "3.1.1",
     "eslint-config-nodebb": "1.1.5",
     "eslint-plugin-import": "2.31.0",
@@ -183,7 +184,8 @@
     "mocha-lcov-reporter": "1.3.0",
     "mockdate": "3.0.5",
     "nyc": "^15.1.0",
-    "smtp-server": "3.13.6"
+    "smtp-server": "3.13.6",
+    "supertest": "^7.1.4"
   },
   "optionalDependencies": {
     "sass-embedded": "1.88.0"
@@ -207,9 +209,7 @@
       "name": "Barış Soner Uşaklı",
       "email": "baris@nodebb.org",
       "url": "https://github.com/barisusakli"
-    }
-  ],
-  "jest": {
-    "testEnvironment": "jsdom"
-  }
+        }
+  ]
 }
+
