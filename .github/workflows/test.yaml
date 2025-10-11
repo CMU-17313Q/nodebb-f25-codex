@@ -53,6 +53,9 @@ jobs:
         with:
           useLockFile: false
 
+      - name: Install chai
+        run: npm install chai
+
       - name: Install Solved Plugin
         run: npm install ./nodebb-plugin-solved
 
