@@ -12,7 +12,7 @@ services:
       - nodebb-config:/opt/config
       - ./install/docker/setup.json:/usr/src/app/setup.json
 
- # Not necessary
+ # Not 
   # mongo:
   #   image: 'mongo:7-jammy'
   #   restart: unless-stopped
