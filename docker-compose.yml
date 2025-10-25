@@ -1,7 +1,9 @@
 services:
   nodebb:
     user: "0"
-    build: .
+    build: 
+      context: .
+      dockerfile: dev.Dockerfile   
     # image: ghcr.io/nodebb/nodebb:latest
     restart: unless-stopped
     ports:
