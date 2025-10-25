@@ -12,18 +12,18 @@ services:
       - nodebb-config:/opt/config
       - ./install/docker/setup.json:/usr/src/app/setup.json
 
-  mongo:
-    image: 'mongo:7-jammy'
-    restart: unless-stopped
-    ports:
-      - '27017:27017'
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: nodebb
-      MONGO_INITDB_ROOT_PASSWORD: nodebb
-      MONGO_INITDB_DATABASE: nodebb
-    volumes:
-      - mongo-data:/data/db
-      - ./install/docker/mongodb-user-init.js:/docker-entrypoint-initdb.d/user-init.js
+  # mongo:
+  #   image: 'mongo:7-jammy'
+  #   restart: unless-stopped
+  #   ports:
+  #     - '27017:27017'
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: nodebb
+  #     MONGO_INITDB_ROOT_PASSWORD: nodebb
+  #     MONGO_INITDB_DATABASE: nodebb
+  #   volumes:
+  #     - mongo-data:/data/db
+  #     - ./install/docker/mongodb-user-init.js:/docker-entrypoint-initdb.d/user-init.js
   redis:
     image: redis:8.0.1-alpine
     restart: unless-stopped
