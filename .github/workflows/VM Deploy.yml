@@ -32,6 +32,13 @@ jobs:
           script: | 
             cd code/${{ secrets.REPO_NAME }}
             git pull origin main
+            mkdir -p ./.docker/database/redis \
+                     ./.docker/database/postgresql/data \
+                     ./.docker/build \
+                     ./.docker/public/uploads \
+                     ./.docker/config
+
+            chmod -R 0777 ./.docker
             docker compose down
             docker compose --profile redis up --build -d
 #testing vm deploy
