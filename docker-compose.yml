@@ -62,7 +62,7 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ./.docker/database/redis
+      device: ${PWD}/.docker/database/redis
 
   postgres-data:
     driver: local
