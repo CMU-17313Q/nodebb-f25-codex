@@ -6,6 +6,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -25,7 +27,7 @@ jobs:
 
       # Make Coveralls non-blocking and only run if a token exists
       - name: Upload coverage to Coveralls (non-blocking)
-        if: ${{ secrets.COVERALLS_REPO_TOKEN != '' }}
+        if: ${{ env.COVERALLS_REPO_TOKEN != '' }}
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
