@@ -25,7 +25,7 @@ jobs:
 
       # Make Coveralls non-blocking and only run if a token exists
       - name: Upload coverage to Coveralls (non-blocking)
-        if: ${{ secrets.COVERALLS_REPO_TOKEN != '' && always() }}
+        if: ${{ secrets.COVERALLS_REPO_TOKEN != '' }}
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
