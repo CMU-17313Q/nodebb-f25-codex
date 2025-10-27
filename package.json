@@ -166,8 +166,8 @@
     "@commitlint/cli": "19.8.1",
     "@commitlint/config-angular": "19.8.1",
     "@eslint/js": "9.26.0",
-    "chai": "^6.2.0",
     "@stylistic/eslint-plugin": "^5.4.0",
+    "chai": "^6.2.0",
     "coveralls": "3.1.1",
     "eslint-config-nodebb": "1.1.5",
     "eslint-plugin-import": "2.31.0",
@@ -185,6 +185,7 @@
     "mockdate": "3.0.5",
     "nyc": "^15.1.0",
     "smtp-server": "3.13.6",
+    "snyk": "^1.1300.1",
     "supertest": "^7.1.4"
   },
   "optionalDependencies": {
@@ -209,7 +210,6 @@
       "name": "Barış Soner Uşaklı",
       "email": "baris@nodebb.org",
       "url": "https://github.com/barisusakli"
-        }
+    }
   ]
 }
-
