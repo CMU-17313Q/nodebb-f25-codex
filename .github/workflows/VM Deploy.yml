@@ -41,6 +41,3 @@ jobs:
             chmod -R 0777 ./.docker
             docker compose down
             docker compose --profile redis up --build -d
-#testing vm deploy
-
-# testing VM Deploy
