@@ -208,6 +208,153 @@ This feature was developed with  assistance from ChatGPT (OpenAI). It was used f
 All code and explanations were implimented, reviewed, modified, and verified by me (Moza Al Fahad).
 
 
+---
+
+# Thread Anonymous Plugin – User Guide
+Course: 17-313 Foundations of Software Engineering (Fall 2025)  
+Author: Raghd Al-Khalifa & Lujain Al-Mulaifi
+---
+
+## 1. Overview
+
+The Anonymous Button plugin displays an anonymous button for the user when they open up NodeBB. When clicking you toggle it on/off, it highlights green if its on/gray if off. When the feature is clicked, every post the user makes shows up as Anonymous. Hiding their name and pfp. 
+
+---
+
+## 2. Features Implemented
+
+- A button automatically appears when a user opens NodeBB.
+- Uses a new field with posts, that handles cases where user is anonymous. 
+- Users can click and toggle on/off
+- Implemented with a plugin folder nodebb-plugin-anonymous-button with its respective JS files inside.
+
+---
+
+## 3. How It Works
+
+1. When a user opens nodebb, there is a floating button in the corner.
+2. If the user clicks it, it turns on isAnonymous (highlighted green)
+3. If its toggled green, any post that the user makes will be masked with Anonymous.
+4. To toggle it off, they click the button again.
+
+---
+
+## 5. Automated Testing & Running Tests
+
+Main test file:
+- Located in test/anonymous-button.test.js
+
+To lint and run tests:
+    npm run lint
+    npm run test:anonymous-button
+All tests should pass. 
+
+---
+
+## 6. Front-end Testing
+
+1. Log into NodeBB with an account.  
+2. Turn on the anon button at the bottom 
+3. Verify that:  
+   - If Anon is green, all posts made during that is masked as Anonymous
+   - If Anon is gray, all posts that are made show the user as it is not anonymous.
+
+---
+
+## 10. Author and Acknowledgement
+
+Author: Raghd Al-Khalifa & Lujain Al Mulaifi  
+Course: 17-313 Foundations of Software Engineering (Fall 2025)  
+Institution: Carnegie Mellon University in Qatar  
+
+This plugin was developed at Sprint 1 and automated test suite was developed in Sprint 2, focusing on automated testing and user documentation for software features.
+
+---
+
+**AI Assistance Disclosure**
+
+This feature was developed with  assistance from ChatGPT (OpenAI). It was used for debugging, generating automated tests, and implementing the pop up feature.  
+All code and explanations were implimented, reviewed, modified, and verified by me (Raghd Al-Khalifa & Lujain Al-Mulaifi).
+
+
+---
+
+# Thread Mark as Solved Plugin – User Guide
+Course: 17-313 Foundations of Software Engineering (Fall 2025)  
+Author: Raghd Al-Khalifa 
+
+---
+
+## 1. Overview
+
+The Mark as Solved plugin displays a banner and green highlight that says it was upvoted by the original owner of the post. It means that the author found the response as helpful. If it was unvoted, the banner would be removed. 
+
+---
+
+## 2. Features Implemented
+
+- A banner that automatically appears if a original post owner upvotes a reply.
+- Uses sockets and a brand new plugin to display it, without modifiying existing posts.
+- Original topic owners can upvote it to have the banner to show.
+- Simple and clear banner that highlights the response in a good UI design.
+- Implemented with a plugin folder that has a js file that handles this.
+
+---
+
+## 3. How It Works
+
+1. When a topic owner upvotes, it shows a banner that highlights the reply saying it was found helpful/solved. 
+2. When the topic owner removes the upvote, it goes away
+3. The badge stays even if the page is refreshed, and shows for everyone
+
+---
+
+## 5. Automated Testing & Running Tests
+
+Main test file:
+- Located in test/solved-plugin.test.js
+
+To lint and run tests:
+    npm run lint
+    npm run test:solved-plugin
+All tests should pass. 
+
+---
+
+## 6. Front-end Testing
+
+1. Log into NodeBB with a test account.
+2. Log into it with another
+3. Make a topic post
+4. Reply to it from another account
+5. Back to the main account (topic owner) upvote the reply
+6. Verify that:  
+   - A green badge/highlight shows over the answer saying it was marked as helpful
+   - Refresh and ensures it stays there
+   - If upvotes, ensure it goes away.
+
+---
+
+## 10. Author and Acknowledgement
+
+Author: Raghd Al-Khalifa
+Course: 17-313 Foundations of Software Engineering (Fall 2025)  
+Institution: Carnegie Mellon University in Qatar  
+
+This plugin was developed at Sprint 2 and automated test suite was developed in Sprint 2.
+
+---
+
+**AI Assistance Disclosure**
+
+This feature was developed with assistance from ChatGPT (OpenAI). It was used for debugging, generating automated tests, and implementing the pop up feature.  
+All code and explanations were implimented, reviewed, modified, and verified byRaghd Al-Khalifa.
+
+
+---
+
+
+
 
 
 
