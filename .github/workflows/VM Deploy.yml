@@ -34,6 +34,3 @@ jobs:
             git pull origin main
             docker compose down
             docker compose --profile redis up --build -d
-#testing vm deploy
-
-# testing
