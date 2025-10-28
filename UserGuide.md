@@ -273,7 +273,7 @@ This plugin was developed at Sprint 1 and automated test suite was developed in 
 
 **AI Assistance Disclosure**
 
-This feature was developed with  assistance from ChatGPT (OpenAI). It was used for debugging, generating automated tests, and implementing the pop up feature.  
+This feature was developed with  assistance from ChatGPT (OpenAI). It was used for debugging, generating automated tests, and implementing the anonymous plugin feature.  
 All code and explanations were implimented, reviewed, modified, and verified by me (Raghd Al-Khalifa & Lujain Al-Mulaifi).
 
 
@@ -347,7 +347,7 @@ This plugin was developed at Sprint 2 and automated test suite was developed in 
 
 **AI Assistance Disclosure**
 
-This feature was developed with assistance from ChatGPT (OpenAI). It was used for debugging, generating automated tests, and implementing the pop up feature.  
+This feature was developed with assistance from ChatGPT (OpenAI). It was used for debugging, generating automated tests, and implementing the mark as solved/upvote feature.  
 All code and explanations were implimented, reviewed, modified, and verified byRaghd Al-Khalifa.
 
 
