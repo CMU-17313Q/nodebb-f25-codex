@@ -1,3 +1,22 @@
+## NOTE: For each plugin make sure it is activated through the following steps:
+1.
+npm install ./nodebb-plugin-solved
+
+npm install ./nodebb-plugin-anonymous-button
+
+npm install nodebb-plugin-summarizer
+
+npm install nodebb-plugin-thread-summarizer
+
+2.
+./nodebb activate nodebb-plugin-solved
+
+./nodebb activate nodebb-plugin-anonymous-button
+
+./nodebb activate nodebb-plugin-summarizer
+
+./nodebb activate nodebb-plugin-thread-summarizer 
+
 # Thread Summarizer Plugin – User Guide
 Course: 17-313 Foundations of Software Engineering (Fall 2025)  
 Author: Salwa Al-Kuwari
