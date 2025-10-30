@@ -20,7 +20,8 @@ npm install ./nodebb-plugin-unread-pop-lite
 
 ./nodebb activate nodebb-plugin-unread-pop-lite
 
-## if it does not show in ./nodebb plugins, go to the plugins folder
+if it does not show in ./nodebb plugins, go to the plugins folder:
+
 1. cd plugins
 2. npm link
 3. cd ..
