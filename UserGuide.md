@@ -4,9 +4,10 @@ npm install ./nodebb-plugin-solved
 
 npm install ./nodebb-plugin-anonymous-button
 
-npm install nodebb-plugin-summarizer
+npm install ./nodebb-plugin-summarizer
 
-npm install nodebb-plugin-thread-summarizer
+npm install ./nodebb-plugin-thread-summarizer
+npm install ./nodebb-plugin-unread-pop-lite
 
 2.
 ./nodebb activate nodebb-plugin-solved
@@ -16,6 +17,16 @@ npm install nodebb-plugin-thread-summarizer
 ./nodebb activate nodebb-plugin-summarizer
 
 ./nodebb activate nodebb-plugin-thread-summarizer 
+
+./nodebb activate nodebb-plugin-unread-pop-lite
+
+## if it does not show in ./nodebb plugins, go to the plugins folder
+1. cd plugins
+2. npm link
+3. cd ..
+4. npm link nodebb-plugin-unread-pop-lite
+5. ./nodebb build
+6. ./nodebb activate {name of plugin} (e.g nodebb-plugin-unread-pop-lite)
 
 # Thread Summarizer Plugin – User Guide
 Course: 17-313 Foundations of Software Engineering (Fall 2025)  
