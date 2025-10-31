@@ -2,9 +2,13 @@ name: CI — Jest Tests Only
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
   pull_request:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - develop
 
 jobs:
   jest-tests:
@@ -22,8 +26,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Configure NodeBB
-        run: ./nodebb setup --yes
+      - name: Setup NodeBB
+        run: printf "\n" | ./nodebb setup
+
+      - name: Build NodeBB
+        run: ./nodebb build
 
       - name: Run Tests
         run: npm test
