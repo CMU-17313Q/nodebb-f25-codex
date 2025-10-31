@@ -1,52 +1,28 @@
-name: CI — Jest + Plugin Activation
+name: CI — Jest Unit Tests
 
 on:
-  pull_request:
-    branches: [ main ]
   push:
-    branches: [ main ]
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+permissions:
+  contents: read
 
 jobs:
   jest-tests:
-    name: Run Jest with Plugins Enabled
     runs-on: ubuntu-latest
-
-    services:
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Install Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
 
-      - name: Install Packages
-        run: |
-          cp install/package.json package.json
-          npm install
-          npm install chai nyc
+      - name: Install Dependencies
+        run: npm install
 
-      # Start NodeBB for plugin activation
-      - name: Start NodeBB background
-        run: ./nodebb start & sleep 12
-
-      - name: Activate Custom Plugins
-        run: |
-          ./nodebb activate nodebb-plugin-anonymous-button
-          ./nodebb activate nodebb-plugin-solved
-          ./nodebb activate nodebb-plugin-thread-summarizer
-          ./nodebb activate nodebb-plugin-unread-pop-lite
-
-      - name: Stop NodeBB
-        run: ./nodebb stop
-
-      - name: Build NodeBB
-        run: ./nodebb build
-
-      - name: Run Jest Tests with Coverage
+      - name: ✅ Run Jest Tests with Coverage
         run: npm test -- --coverage
