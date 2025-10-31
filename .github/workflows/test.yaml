@@ -30,33 +30,39 @@ jobs:
           - 6379:6379
 
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - run: cp install/package.json package.json
+    - run: cp install/package.json package.json
 
-      - name: Install Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
+    - name: Install Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22
 
-      - name: Install Dependencies
-        run: npm install
+    - name: Install Dependencies
+      run: npm install
 
-      - name: Install Solved Plugin
-        run: npm install ./nodebb-plugin-solved
+    - name: Install chai
+      run: npm install chai
 
-      - name: Install Anonymous Button Plugin
-        run: npm install ./nodebb-plugin-anonymous-button
+    - name: Install Solved Plugin
+      run: npm install ./nodebb-plugin-solved
 
-      - name: Setup on Redis
-        run: |
-          node app --setup="{}" --ci="{}"
+    - name: Install Anonymous Button Plugin
+      run: npm install ./nodebb-plugin-anonymous-button
 
-      - name: ✅ Run Jest Tests
-        run: npm test
+    - name: Setup on Redis
+      run: |
+        node app --setup="{}" --ci="{}"
 
-      - name: 🔍 Coverage
-        run: npm run coverage
+    - name: Activate Solved Plugin
+      run: ./nodebb activate nodebb-plugin-solved
+      
+    - name: Activate Anonymous Button Plugin
+      run: ./nodebb activate nodebb-plugin-anonymous-button
 
-      - name: ✅ Upload Coverage to Coveralls
-        uses: coverallsapp/github-action@v2
+    - name: Build NodeBB
+      run: ./nodebb build
+
+    - name: ✅ Run Jest Tests (Unit Tests)
+      run: npm test
