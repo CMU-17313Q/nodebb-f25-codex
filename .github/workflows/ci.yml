@@ -2,9 +2,9 @@ name: CI — Jest Tests Only
 
 on:
   push:
-    branches: [main, develop]
+    branches: [ main, develop ]
   pull_request:
-    branches: [main, develop]
+    branches: [ main, develop ]
 
 jobs:
   jest-tests:
@@ -22,16 +22,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build NodeBB
-        run: ./nodebb build
+      - name: Configure NodeBB
+        run: ./nodebb setup --yes
 
-      - name: Run Tests with Coverage
-        run: npm test -- --coverage
-
-      # Optional: Coveralls is NON-BLOCKING now
-      - name: Upload coverage to Coveralls
-        if: always()
-        continue-on-error: true
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Tests
+        run: npm test
