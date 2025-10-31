@@ -2,17 +2,19 @@ name: CI — Jest Tests Only
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: [ main, develop ]
   pull_request:
-    branches:
-      - main
-      - develop
+    branches: [ main, develop ]
 
 jobs:
   jest-tests:
     runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
 
     steps:
       - name: Checkout code
@@ -26,8 +28,19 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Setup NodeBB
-        run: printf "\n" | ./nodebb setup
+      - name: Create minimal config for CI
+        run: |
+          cat <<EOF > config.json
+          {
+            "url": "http://localhost:4567",
+            "secret": "ci-secret",
+            "database": "redis",
+            "redis": {
+              "host": "127.0.0.1",
+              "port": 6379
+            }
+          }
+          EOF
 
       - name: Build NodeBB
         run: ./nodebb build
