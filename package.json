@@ -12,11 +12,17 @@
   "scripts": {
     "start": "node loader.js",
     "lint": "eslint --cache ./nodebb ./nodebb-plugin-thread-summarizer",
-    "test": "NYC_TEMP_DIR=.nyc_tmp nyc --reporter=html --reporter=text-summary mocha \"test/**/*.test.js\" --exit",
     "pretest": "rm -rf .nyc_output coverage .nyc_tmp",
+    "test": "npm run test:ci",
+    "test:ci": "NYC_TEMP_DIR=.nyc_tmp nyc --reporter=html --reporter=text-summary mocha \"test/**/*.test.js\" --exit",
     "coverage": "nyc report --reporter=text-lcov > ./coverage/lcov.info",
     "coveralls": "nyc report --reporter=text-lcov | coveralls && rm -r coverage",
-    "test:popup": "jest test/unread-pop-lite.spec.js"
+    "test:popup": "jest test/unread-pop-lite.spec.js",
+    "ci:nodebb:setup": "node app --setup=\"$SETUP\" --ci=\"$CI\"",
+    "ci:nodebb:activate": "./nodebb activate nodebb-plugin-anonymous-button && ./nodebb activate nodebb-plugin-solved && ./nodebb activate nodebb-plugin-thread-summarizer && ./nodebb activate nodebb-plugin-unread-pop-lite",
+    "ci:nodebb:build": "./nodebb build",
+    "ci:nodebb:start": "./nodebb start",
+    "ci:nodebb:stop": "./nodebb stop"
   },
   "nyc": {
     "exclude": [
@@ -111,6 +117,7 @@
     "nodebb-plugin-spam-be-gone": "2.3.2",
     "nodebb-plugin-summarizer": "file:plugins/nodebb-plugin-thread-summarizer",
     "nodebb-plugin-thread-summarizer": "file:nodebb-plugin-thread-summarizer",
+    "nodebb-plugin-unread-pop-lite": "file:plugins/nodebb-plugin-unread-pop-lite",
     "nodebb-plugin-web-push": "0.7.4",
     "nodebb-rewards-essentials": "1.0.2",
     "nodebb-theme-harmony": "file:vendor/nodebb-theme-harmony-2.1.15",
