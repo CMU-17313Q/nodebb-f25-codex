@@ -1,11 +1,14 @@
 {
-  "esversion": 9,
+  "esversion": 11,
   "node": true,
+  "browser": true,
   "undef": true,
   "unused": true,
   "globals": {
-    "angular": true,
+    "app": true,
+    "document": true,
+    "window": true,
     "$": true,
-    "db": true
+    "api": true
   }
 }
