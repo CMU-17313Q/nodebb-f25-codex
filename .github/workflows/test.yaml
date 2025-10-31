@@ -1,4 +1,4 @@
-name: CI — Lint, Jest & NodeBB Tests
+name: CI — Jest Tests Only
 
 on:
   push:
@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  jest-and-nodebb-tests:
+  jest-tests:
     name: CI Tests
     runs-on: ubuntu-latest
 
@@ -32,7 +32,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: cp install/package.json package.json
+      - name: Use top-level package.json for test config
+        run: cp install/package.json package.json
 
       - name: Install Node
         uses: actions/setup-node@v4
@@ -42,32 +43,14 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install chai
-        run: npm install chai
+      - name: Install Dev Test Tools
+        run: npm install chai nyc
 
-      - name: Install Solved Plugin
-        run: npm install ./nodebb-plugin-solved
-
-      - name: Install Anonymous Button Plugin
-        run: npm install ./nodebb-plugin-anonymous-button
-
-      # ✅ Start NodeBB temporarily to enable plugin activation
-      - name: Start NodeBB in background
-        run: ./nodebb start & sleep 10
-
-      - name: Activate Required Plugins
-        run: |
-          ./nodebb activate nodebb-plugin-solved
-          ./nodebb activate nodebb-plugin-anonymous-button
-
-      - name: Stop NodeBB
-        run: ./nodebb stop
-
-      - name: Build NodeBB
+      - name: Build NodeBB (required for plugin tests)
         run: ./nodebb build
 
-      - name: ✅ Run Jest Tests (Unit Tests)
-        run: npm test
-
-      - name: ✅ Collect Coverage
+      - name: ✅ Run Jest Tests with Coverage
         run: npm test -- --coverage
+
+      - name: ✅ Upload Coverage
+        uses: coverallsapp/github-action@v2
