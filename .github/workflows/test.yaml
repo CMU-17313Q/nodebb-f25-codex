@@ -1,16 +1,13 @@
-name: CI — Jest Unit Tests
+name: CI — Lint + Jest Tests ✅
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main, master, develop ]
-
-permissions:
-  contents: read
+    branches: [ main, develop ]
 
 jobs:
-  jest-tests:
+  lint-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,5 +21,8 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: ✅ Run Jest Tests with Coverage
+      - name: Run ESLint (lint all JS)
+        run: npm run lint
+
+      - name: Run Jest Tests with Coverage
         run: npm test -- --coverage
