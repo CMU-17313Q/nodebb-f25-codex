@@ -13,6 +13,11 @@ jobs:
     services:
       redis:
         image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
         ports:
           - 6379:6379
 
@@ -37,13 +42,21 @@ jobs:
             "database": "redis",
             "redis": {
               "host": "127.0.0.1",
-              "port": 6379
+              "port": 6379,
+              "database": 0
             }
           }
           EOF
 
+      - name: Wait for Redis to be ready
+        run: |
+          for i in {1..20}; do
+            redis-cli ping && break
+            sleep 2
+          done
+
       - name: Build NodeBB
         run: ./nodebb build
 
-      - name: Run Tests
+      - name: Run Jest Tests
         run: npm test
