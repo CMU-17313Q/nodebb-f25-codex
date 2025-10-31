@@ -30,46 +30,44 @@ jobs:
           - 6379:6379
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - run: cp install/package.json package.json
+      - run: cp install/package.json package.json
 
-    - name: Install Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
-    - name: Install Dependencies
-      run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-    - name: Install chai
-      run: npm install chai
+      - name: Install chai
+        run: npm install chai
 
-    - name: Install Solved Plugin
-      run: npm install ./nodebb-plugin-solved
+      - name: Install Solved Plugin
+        run: npm install ./nodebb-plugin-solved
 
-    - name: Install Anonymous Button Plugin
-      run: npm install ./nodebb-plugin-anonymous-button
+      - name: Install Anonymous Button Plugin
+        run: npm install ./nodebb-plugin-anonymous-button
 
-    - name: Setup on Redis
-      run: |
-        node app --setup="{}" --ci="{}"
+      # ✅ Start NodeBB temporarily to enable plugin activation
+      - name: Start NodeBB in background
+        run: ./nodebb start & sleep 10
 
-    - name: Activate Solved Plugin
-      run: ./nodebb activate nodebb-plugin-solved
-      
-    - name: Activate Anonymous Button Plugin
-      run: ./nodebb activate nodebb-plugin-anonymous-button
+      - name: Activate Required Plugins
+        run: |
+          ./nodebb activate nodebb-plugin-solved
+          ./nodebb activate nodebb-plugin-anonymous-button
 
-    - name: Build NodeBB
-      run: ./nodebb build
-      
-    - name: ✅ Run Jest Tests (Unit Tests)
-      run: npm test
+      - name: Stop NodeBB
+        run: ./nodebb stop
 
-    - name: ✅ Collect Coverage
-      run: npm test -- --coverage
+      - name: Build NodeBB
+        run: ./nodebb build
 
+      - name: ✅ Run Jest Tests (Unit Tests)
+        run: npm test
 
-    - name: ✅ Run Jest Tests (Unit Tests)
-      run: npm test
+      - name: ✅ Collect Coverage
+        run: npm test -- --coverage
