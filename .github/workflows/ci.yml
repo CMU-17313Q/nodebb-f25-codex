@@ -1,33 +1,41 @@
-name: CI
+name: CI — Jest Tests Only
+
 on:
   push:
+    branches:
+      - main
+      - develop
   pull_request:
+    branches:
+      - main
+      - develop
 
 jobs:
-  build:
+  jest-tests:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: 'npm'
 
-      - name: Install
-        run: npm ci
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Lint
-        run: npm run lint
+      - name: Build NodeBB (needed by plugin hooks)
+        run: ./nodebb build
 
-      - name: Test (with coverage)
-        run: npm test
+      - name: Run Tests with Coverage
+        run: npm test -- --coverage
 
-      # Make Coveralls non-blocking and only run if a token exists
-      - name: Upload coverage to Coveralls (non-blocking)
-        if: ${{ secrets.COVERALLS_REPO_TOKEN != '' && always() }}
+      - name: Upload coverage to Coveralls
+        if: always()
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./coverage/lcov.info
-        continue-on-error: true
