@@ -63,6 +63,13 @@ jobs:
 
     - name: Build NodeBB
       run: ./nodebb build
+      
+    - name: ✅ Run Jest Tests (Unit Tests)
+      run: npm test
+
+    - name: ✅ Collect Coverage
+      run: npm test -- --coverage
+
 
     - name: ✅ Run Jest Tests (Unit Tests)
       run: npm test
