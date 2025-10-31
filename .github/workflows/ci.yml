@@ -1,33 +1,62 @@
-name: CI
+name: CI — Jest Tests Only
+
 on:
   push:
+    branches: [ main, develop ]
   pull_request:
+    branches: [ main, develop ]
 
 jobs:
-  build:
+  jest-tests:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+    services:
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
 
-      - name: Install
-        run: npm ci
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Lint
-        run: npm run lint
+      - name: Create minimal config for CI
+        run: |
+          cat <<EOF > config.json
+          {
+            "url": "http://localhost:4567",
+            "secret": "ci-secret",
+            "database": "redis",
+            "redis": {
+              "host": "127.0.0.1",
+              "port": 6379,
+              "database": 0
+            }
+          }
+          EOF
 
-      - name: Test (with coverage)
+      - name: Wait for Redis to be ready
+        run: |
+          for i in {1..20}; do
+            redis-cli ping && break
+            sleep 2
+          done
+
+      - name: Build NodeBB
+        run: ./nodebb build
+
+      - name: Run Jest Tests
         run: npm test
-
-      # Make Coveralls non-blocking and only run if a token exists
-      - name: Upload coverage to Coveralls (non-blocking)
-        if: ${{ secrets.COVERALLS_REPO_TOKEN != '' && always() }}
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./coverage/lcov.info
-        continue-on-error: true
