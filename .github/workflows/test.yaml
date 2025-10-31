@@ -1,56 +1,52 @@
-name: CI — Jest Tests Only
+name: CI — Jest + Plugin Activation
 
 on:
-  push:
-    branches: [ main, master, develop ]
   pull_request:
-    branches: [ main, master, develop ]
-
-defaults:
-  run:
-    shell: bash
-
-permissions:
-  contents: read
+    branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs:
   jest-tests:
-    name: CI Tests
+    name: Run Jest with Plugins Enabled
     runs-on: ubuntu-latest
 
     services:
       redis:
-        image: redis:8.0.1
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        image: redis:7
         ports:
           - 6379:6379
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use top-level package.json for test config
-        run: cp install/package.json package.json
-
-      - name: Install Node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 18
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install Packages
+        run: |
+          cp install/package.json package.json
+          npm install
+          npm install chai nyc
 
-      - name: Install Dev Test Tools
-        run: npm install chai nyc
+      # Start NodeBB for plugin activation
+      - name: Start NodeBB background
+        run: ./nodebb start & sleep 12
 
-      - name: Build NodeBB (required for plugin tests)
+      - name: Activate Custom Plugins
+        run: |
+          ./nodebb activate nodebb-plugin-anonymous-button
+          ./nodebb activate nodebb-plugin-solved
+          ./nodebb activate nodebb-plugin-thread-summarizer
+          ./nodebb activate nodebb-plugin-unread-pop-lite
+
+      - name: Stop NodeBB
+        run: ./nodebb stop
+
+      - name: Build NodeBB
         run: ./nodebb build
 
-      - name: ✅ Run Jest Tests with Coverage
+      - name: Run Jest Tests with Coverage
         run: npm test -- --coverage
-
-      - name: ✅ Upload Coverage
-        uses: coverallsapp/github-action@v2
