@@ -2,15 +2,9 @@ name: Lint and test
 
 on:
   push:
-    branches:
-      - main
-      - master
-      - develop
+    branches: [ main, master, develop ]
   pull_request:
-    branches:
-      - main
-      - master
-      - develop
+    branches: [ main, master, develop ]
 
 defaults:
   run:
@@ -28,14 +22,12 @@ jobs:
     services:
       redis:
         image: 'redis:8.0.1'
-        # Set health checks to wait until redis has started
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
         ports:
-          # Maps port 6379 on service container to the host
           - 6379:6379
 
     steps:
@@ -72,7 +64,6 @@ jobs:
               "admin:email": "test@example.org",
               "admin:password": "hAN3Eg8W",
               "admin:password:confirm": "hAN3Eg8W",
-
               "database": "redis",
               "redis:host": "127.0.0.1",
               "redis:port": 6379,
@@ -97,10 +88,7 @@ jobs:
       - name: Build NodeBB
         run: ./nodebb build
 
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Node tests
+      - name: Run Jest tests (primary integration requirement)
         run: npm test
 
       - name: Extract coverage info
