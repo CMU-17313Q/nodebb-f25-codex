@@ -105,6 +105,7 @@
     "mousetrap": "1.6.5",
     "multiparty": "4.2.3",
     "nconf": "0.13.0",
+    "node-fetch": "^3.3.2",
     "nodebb-plugin-2factor": "7.5.10",
     "nodebb-plugin-anonymous-button": "file:nodebb-plugin-anonymous-button",
     "nodebb-plugin-composer-default": "10.2.51",
