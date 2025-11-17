@@ -3,21 +3,20 @@
 const translatorApi = module.exports;
 
 translatorApi.translate = async function (postData) {
-	const TRANSLATOR_API = 'http://127.0.0.1:8080';
+	const TRANSLATOR_API = 'http://crs-17313-codex-gpu.qatar.cmu.edu/';
 
 	try {
-		const response = await fetch(`${TRANSLATOR_API}/?content=${encodeURIComponent(postData.content)}`);
-		const data = await response.json();
+		const response = await fetch(
+			`${TRANSLATOR_API}/?content=${encodeURIComponent(postData.content)}`
+		);
 
-		// Microservice returns:
-		// {
-		//   "is_english": true/false,
-		//   "translated_content": "..."
-		// }
+		const data = await response.json();
 
 		return [data.is_english, data.translated_content || ''];
 	} catch (err) {
 		console.error('Translator API error:', err);
-		return [true, '']; // fallback: treat as English
+
+		// FORCE BUTTON TO ALWAYS SHOW FOR NOW
+		return [false, postData.content];
 	}
 };
